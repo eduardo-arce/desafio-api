@@ -4,6 +4,15 @@ using Desafio.Infra.Context;
 using Desafio.Infra.UnitOfWork;
 using Desafio.Service;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Desafio.Infra.Repository;
+
+var config = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile<UserProfile>();
+});
+
+IMapper mapper = config.CreateMapper();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,10 +26,20 @@ builder.Services.AddDbContext<DesafioContext>(options =>
     b => b.MigrationsAssembly(typeof(DesafioContext)
     .Assembly.FullName)));
 
+builder.Services.AddSignalR();
+
 // Add services to the container.
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddTransient<IWeatherForecastService, WeatherForecastService>();
+builder.Services.AddTransient<IUserService, UserService>();
+
+builder.Services.AddTransient<IUpdateNotificationService, UpdateNotificationService>();
+
+builder.Services.AddTransient<ILoginService, LoginService>();
+
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+
+builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddControllers();
 
@@ -35,6 +54,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseRouting();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<UpdateNotificationService>("/UpdateNotification");
+});
 
 app.UseSwagger();
 
