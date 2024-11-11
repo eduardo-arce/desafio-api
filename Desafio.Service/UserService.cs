@@ -4,6 +4,10 @@ using Desafio.Domain.Entity;
 using Desafio.Domain.Filter;
 using Desafio.Domain.Repository;
 using Desafio.Domain.Service;
+using Desafio.Domain.Utils.Email;
+using Desafio.Domain.Utils.Hash;
+using Desafio.Domain.Utils.Jwt;
+using Microsoft.AspNetCore.Http;
 
 namespace Desafio.Service
 {
@@ -13,18 +17,26 @@ namespace Desafio.Service
         private readonly IUnitOfWork _uow;
         private readonly IUserRepository _userRepository;
         private readonly IUpdateNotificationService _updateNotificationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IMapper mapper, IUserRepository userRepository, IUnitOfWork uow, IUpdateNotificationService updateNotificationService)
+        public UserService(IMapper mapper, IUserRepository userRepository, IUnitOfWork uow, IUpdateNotificationService updateNotificationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _userRepository = userRepository;
             _uow = uow;
             _updateNotificationService = updateNotificationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task UserRegister(UserDTO userDTO)
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token); 
+            await ValidateEmail(userDTO.Email);
+
             var userMapper = _mapper.Map<User>(userDTO);
+            userMapper.Password = HashService.HashPassword(userDTO.Password);
 
             await _userRepository.AddAsync(userMapper);
             await _uow.CommitAsync();
@@ -34,6 +46,9 @@ namespace Desafio.Service
 
         public async Task<PaginateDTO<UserDTO>> UserSearch(UserFilterDTO userFilterDTO, int pageNumber, int pageSize)
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token);
+
             var consultUsers = await _userRepository.GetUsersList(userFilterDTO, pageNumber, pageSize);
 
             var usersListDTO = _mapper.Map<List<UserDTO>>(consultUsers);
@@ -45,6 +60,9 @@ namespace Desafio.Service
 
         public async Task<ChartsDTO> ConsultChart()
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token);
+
             var consultUserDatabase = (await _userRepository.GetAll()).ToList();
 
             var userGroups = consultUserDatabase
@@ -77,6 +95,9 @@ namespace Desafio.Service
 
         public async Task<UserDTO> GetById(int id)
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token);
+
             var consultUserById = await GetByIdWithValidate(id);
 
             var userDTO = _mapper.Map<UserDTO>(consultUserById);
@@ -86,6 +107,11 @@ namespace Desafio.Service
 
         public async Task UserUpdate(int id, UserDTO userDTO)
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token);
+            await ValideUserAdmin(id);
+            await ValidateEmail(userDTO.Email);
+
             var consultUserById = await GetByIdWithValidate(id);
 
             var user = _mapper.Map<User>(userDTO);
@@ -100,6 +126,10 @@ namespace Desafio.Service
 
         public async Task UpdateStatusUser(int id, bool status)
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token);
+            await ValideUserAdmin(id);
+
             var consultUserById = await GetByIdWithValidate(id);
             consultUserById.IsActive = status;
 
@@ -111,8 +141,12 @@ namespace Desafio.Service
 
         public async Task UpdateMyPassword(int id, NewPasswordDTO newPasswordDTO)
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token);
+            await ValideUserAdmin(id);
+
             var consultUserById = await GetByIdWithValidate(id);
-            consultUserById.Password = newPasswordDTO.NewPassword;
+            consultUserById.Password = HashService.HashPassword(newPasswordDTO.NewPassword);
 
             await _userRepository.UpdateAsync(consultUserById);
             await _uow.CommitAsync();
@@ -120,6 +154,10 @@ namespace Desafio.Service
 
         public async Task DeleteUser(int id)
         {
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            await ValidateToken(token);
+            await ValideUserAdmin(id);
+
             var consultUserById = await GetByIdWithValidate(id);
 
             await _userRepository.DeleteAsync(consultUserById);
@@ -131,11 +169,35 @@ namespace Desafio.Service
         public async Task<User> GetByIdWithValidate(int id)
         {
             var consultUserById = await _userRepository.GetById(id);
-
             if (consultUserById == null)
                 throw new Exception($"Usuário não encontrado na base de dados");
 
             return consultUserById;
+        }
+
+        public async Task ValidateToken(string token)
+        {
+            var jwtService = new JwtService();
+            int userId = jwtService.ValidateToken(token);
+            if (userId == 0)
+                throw new Exception("Acesso negado");
+
+            var user = await GetByIdWithValidate(userId);
+            if (!user.IsActive)
+                throw new Exception("Acesso negado");
+        }
+
+        public async Task ValideUserAdmin(int id)
+        {
+            if (id == 1)
+                throw new Exception("Parâmetros do usuário admin não podem ser alterados");
+        }
+
+        public async Task ValidateEmail(string email)
+        {
+            bool emailOk = EmailValidatorService.IsValidEmail(email);
+            if (emailOk)
+                throw new Exception("Email está incorreto");
         }
     }
 }

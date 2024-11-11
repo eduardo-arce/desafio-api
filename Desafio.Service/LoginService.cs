@@ -4,6 +4,8 @@ using Desafio.Domain.Entity;
 using Desafio.Domain.Filter;
 using Desafio.Domain.Repository;
 using Desafio.Domain.Service;
+using Desafio.Domain.Utils.Hash;
+using Desafio.Domain.Utils.Jwt;
 
 namespace Desafio.Service
 {
@@ -20,17 +22,20 @@ namespace Desafio.Service
         {
             var user = await _userRepository.Get(x => x.Email.Equals(loginDTO.Email));
 
-            if (user == null || !user.Password.Equals(loginDTO.Password))
+            if (user == null || !HashService.VerifyPasswordOk(loginDTO.Password, user.Password))
                 throw new Exception("Usuário ou senha inválidos");
 
             if (!user.IsActive)
                 throw new Exception("Usuário inativo");
 
+            var jwtService = new JwtService();
+            string token = jwtService.GenerateToken(user.Id);
+
             var accessUser = new AccessProfileDTO
             {
                 FullName = $"{user.Name} {user.Surname}",
                 Profile = user.AcessLevel,
-                Token = "adhjkkjhgfds"
+                Token = token
             };
 
             return accessUser;
