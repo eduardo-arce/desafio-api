@@ -23,7 +23,7 @@ public class UserProfile : Profile
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Surname))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
+            .ForMember(dest => dest.Password, opt => opt.MapFrom(_ => string.Empty))
             .ForMember(dest => dest.Profile, opt => opt.MapFrom(src => src.AcessLevel))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.IsActive));
     }

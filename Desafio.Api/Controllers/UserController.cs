@@ -3,6 +3,7 @@ using Desafio.Domain.Entity;
 using Desafio.Domain.Filter;
 using Desafio.Domain.Service;
 using Microsoft.AspNetCore.Mvc;
+using static Desafio.Domain.Utils.Exceptions.Exceptions;
 
 namespace Desafio.Api.Controllers
 {
@@ -26,10 +27,14 @@ namespace Desafio.Api.Controllers
 
                 return Ok();
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
-            }            
+                return StatusCode(500, "Erro interno do servidor");
+            }
         }
 
         [HttpGet("Consult")]
@@ -41,9 +46,13 @@ namespace Desafio.Api.Controllers
 
                 return consultUsersList;
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Erro interno do servidor");
             }
         }
 
@@ -56,9 +65,13 @@ namespace Desafio.Api.Controllers
 
                 return consultChart;
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Erro interno do servidor");
             }
         }
 
@@ -71,9 +84,13 @@ namespace Desafio.Api.Controllers
 
                 return consultUser;
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Erro interno do servidor");
             }
         }
 
@@ -86,9 +103,13 @@ namespace Desafio.Api.Controllers
 
                 return Ok();
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Erro interno do servidor");
             }
         }
 
@@ -101,9 +122,13 @@ namespace Desafio.Api.Controllers
 
                 return Ok();
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Erro interno do servidor");
             }
         }
 
@@ -116,9 +141,13 @@ namespace Desafio.Api.Controllers
 
                 return Ok();
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Erro interno do servidor");
             }
         }
 
@@ -131,9 +160,13 @@ namespace Desafio.Api.Controllers
 
                 return Ok();
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Erro interno do servidor");
             }
         }
     }

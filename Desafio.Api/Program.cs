@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Desafio.Infra.Repository;
 using Microsoft.OpenApi.Models;
+using Desafio.Domain.Utils.Exceptions;
 
 var config = new MapperConfiguration(cfg =>
 {
@@ -19,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "API com JWT", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Desafio API", Version = "v1" });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -102,6 +103,8 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapHub<UpdateNotificationService>("/Notification");
 });
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSwagger();
 

@@ -3,6 +3,7 @@ using Desafio.Domain.Entity;
 using Desafio.Domain.Filter;
 using Desafio.Domain.Service;
 using Microsoft.AspNetCore.Mvc;
+using static Desafio.Domain.Utils.Exceptions.Exceptions;
 
 namespace Desafio.Api.Controllers
 {
@@ -26,10 +27,14 @@ namespace Desafio.Api.Controllers
 
                 return login;
             }
+            catch (HttpException ex)
+            {
+                return StatusCode((int)ex.StatusCode, ex.Message);
+            }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
-            }            
+                return StatusCode(500, "Erro interno do servidor");
+            }
         }
     }
 }

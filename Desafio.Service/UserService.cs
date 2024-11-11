@@ -8,6 +8,7 @@ using Desafio.Domain.Utils.Email;
 using Desafio.Domain.Utils.Hash;
 using Desafio.Domain.Utils.Jwt;
 using Microsoft.AspNetCore.Http;
+using static Desafio.Domain.Utils.Exceptions.Exceptions;
 
 namespace Desafio.Service
 {
@@ -172,7 +173,7 @@ namespace Desafio.Service
         {
             var consultUserById = await _userRepository.GetById(id);
             if (consultUserById == null)
-                throw new Exception($"Usuário não encontrado na base de dados");
+                throw new NotFoundException($"Usuário não encontrado na base de dados");
 
             return consultUserById;
         }
@@ -182,11 +183,11 @@ namespace Desafio.Service
             var jwtService = new JwtService();
             int userId = jwtService.ValidateToken(token);
             if (userId == 0)
-                throw new Exception("Acesso negado");
+                throw new UnauthorizedException("Acesso negado");
 
             var user = await GetByIdWithValidate(userId);
             if (!user.IsActive)
-                throw new Exception("Acesso negado");
+                throw new ForbiddenException("Acesso negado");
 
             return userId;
         }
@@ -194,18 +195,18 @@ namespace Desafio.Service
         public async Task ValideUserAdmin(int id, int updaterId)
         {
             if (id == 1)
-                throw new Exception("Parâmetros do usuário admin não podem ser alterados");
+                throw new ForbiddenException("Parâmetros do usuário admin não podem ser alterados");
 
             var user = await GetByIdWithValidate(updaterId);
             if (!user.AcessLevel.Equals("Admin"))
-                throw new Exception("Usuário não tem permissão para escrita de dados");
+                throw new ForbiddenException("Usuário não tem permissão para escrita de dados");
         }
 
         public async Task ValidateEmail(string email)
         {
             bool emailOk = EmailValidatorService.IsValidEmail(email);
-            if (emailOk)
-                throw new Exception("Email está incorreto");
+            if (!emailOk)
+                throw new BadRequestException("Email está incorreto");
         }
     }
 }

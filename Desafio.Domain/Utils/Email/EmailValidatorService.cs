@@ -19,7 +19,9 @@ namespace Desafio.Domain.Utils.Email
 
             string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
 
-            return Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase);
+            var validate = Regex.IsMatch(email, emailPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+            return validate;
         }
     }
 }
