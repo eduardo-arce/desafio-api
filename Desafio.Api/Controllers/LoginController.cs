@@ -17,7 +17,7 @@ namespace Desafio.Api.Controllers
             _loginService = loginService;
         }
 
-        [HttpPost("Login")]
+        [HttpPost]
         public async Task<ActionResult<AccessProfileDTO>> Login(LoginDTO loginDTO)
         {
             try

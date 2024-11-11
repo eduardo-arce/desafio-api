@@ -108,8 +108,8 @@ namespace Desafio.Service
         public async Task UserUpdate(int id, UserDTO userDTO)
         {
             var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            await ValidateToken(token);
-            await ValideUserAdmin(id);
+            int updaterId = await ValidateToken(token);
+            await ValideUserAdmin(id, updaterId);
             await ValidateEmail(userDTO.Email);
 
             var consultUserById = await GetByIdWithValidate(id);
@@ -127,11 +127,12 @@ namespace Desafio.Service
         public async Task UpdateStatusUser(int id, bool status)
         {
             var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            await ValidateToken(token);
-            await ValideUserAdmin(id);
+            int updaterId = await ValidateToken(token);
+            await ValideUserAdmin(id, updaterId);
 
             var consultUserById = await GetByIdWithValidate(id);
             consultUserById.IsActive = status;
+            consultUserById.UpdatedAt = DateTime.UtcNow;
 
             await _userRepository.UpdateAsync(consultUserById);
             await _uow.CommitAsync();
@@ -142,11 +143,12 @@ namespace Desafio.Service
         public async Task UpdateMyPassword(int id, NewPasswordDTO newPasswordDTO)
         {
             var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            await ValidateToken(token);
-            await ValideUserAdmin(id);
+            int updaterId = await ValidateToken(token);
+            await ValideUserAdmin(id, updaterId);
 
             var consultUserById = await GetByIdWithValidate(id);
             consultUserById.Password = HashService.HashPassword(newPasswordDTO.NewPassword);
+            consultUserById.UpdatedAt = DateTime.UtcNow;
 
             await _userRepository.UpdateAsync(consultUserById);
             await _uow.CommitAsync();
@@ -155,8 +157,8 @@ namespace Desafio.Service
         public async Task DeleteUser(int id)
         {
             var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-            await ValidateToken(token);
-            await ValideUserAdmin(id);
+            int updaterId = await ValidateToken(token);
+            await ValideUserAdmin(id, updaterId);
 
             var consultUserById = await GetByIdWithValidate(id);
 
@@ -175,7 +177,7 @@ namespace Desafio.Service
             return consultUserById;
         }
 
-        public async Task ValidateToken(string token)
+        public async Task<int> ValidateToken(string token)
         {
             var jwtService = new JwtService();
             int userId = jwtService.ValidateToken(token);
@@ -185,12 +187,18 @@ namespace Desafio.Service
             var user = await GetByIdWithValidate(userId);
             if (!user.IsActive)
                 throw new Exception("Acesso negado");
+
+            return userId;
         }
 
-        public async Task ValideUserAdmin(int id)
+        public async Task ValideUserAdmin(int id, int updaterId)
         {
             if (id == 1)
                 throw new Exception("Parâmetros do usuário admin não podem ser alterados");
+
+            var user = await GetByIdWithValidate(updaterId);
+            if (!user.AcessLevel.Equals("Admin"))
+                throw new Exception("Usuário não tem permissão para escrita de dados");
         }
 
         public async Task ValidateEmail(string email)

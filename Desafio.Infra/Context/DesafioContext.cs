@@ -24,6 +24,10 @@ namespace Desafio.Infra.Context
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
             builder.Entity<User>().HasData(
                 new User { Id = 1, Name = "Admin", Surname = "Admin", Email = "admin", Password = HashService.HashPassword("admin"), AcessLevel = "Admin", IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
                 new User { Id = 2, Name = "Eduardo", Surname = "Sales", Email = "eduardo.sales@gmail.com", Password = HashService.HashPassword("1234"), AcessLevel = "Comum", IsActive = true, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },

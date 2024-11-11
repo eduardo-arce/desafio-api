@@ -13,14 +13,19 @@ namespace Desafio.Domain.Entity
         [Key]
         public int Id { get; set; }
 
+        [MaxLength(20)]
         public string Name { get; set; }
 
+        [MaxLength(50)]
         public string Surname { get; set; }
 
+        [MaxLength(50)]
         public string Email { get; set; }
 
+        [MaxLength(50)]
         public string Password { get; set; }
 
+        [MaxLength(10)]
         public string AcessLevel { get; set; }
 
         public bool IsActive { get; set; }
