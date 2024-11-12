@@ -24,7 +24,5 @@ namespace Desafio.Domain.Repository
         Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>> expression = null);
 
         Task<T> Get(Expression<Func<T, bool>> expression);
-
-        Task<T> GetById(int key);
     }
-    }
+}

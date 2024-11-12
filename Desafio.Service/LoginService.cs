@@ -23,11 +23,17 @@ namespace Desafio.Service
         {
             var user = await _userRepository.Get(x => x.Email.Equals(loginDTO.Email));
 
-            if (user == null || !HashService.VerifyPasswordOk(loginDTO.Password, user.Password))
-                throw new UnauthorizedException("Usuário ou senha inválidos");
+            if (user == null)
+                throw new BadRequestException("Usuário ou senha inválidos");
+
+            if (string.IsNullOrEmpty(loginDTO.Email) || string.IsNullOrEmpty(loginDTO.Password))
+                throw new BadRequestException("Usuário ou senha inválidos");
 
             if (!user.IsActive)
                 throw new ForbiddenException("Usuário inativo");
+
+            if (!HashService.VerifyPasswordOk(loginDTO.Password, user.Password))
+                throw new UnauthorizedException("Usuário ou senha inválidos");
 
             var jwtService = new JwtService();
             string token = jwtService.GenerateToken(user.Id);

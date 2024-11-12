@@ -35,7 +35,5 @@ namespace Desafio.Infra.Repository
             ? await _context.Set<T>().AsNoTracking().ToListAsync()
             : await _context.Set<T>().AsNoTracking().Where(expression).ToListAsync();
 
-        public async Task<T> GetById(int key) => await _context.Set<T>().FindAsync(key);
-
     }
 }

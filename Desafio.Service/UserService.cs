@@ -118,6 +118,7 @@ namespace Desafio.Service
             var user = _mapper.Map<User>(userDTO);
             user.Id = id;
             user.CreatedAt = consultUserById.CreatedAt;
+            user.Password = consultUserById.Password;
 
             await _userRepository.UpdateAsync(user);
             await _uow.CommitAsync();
@@ -171,7 +172,7 @@ namespace Desafio.Service
 
         public async Task<User> GetByIdWithValidate(int id)
         {
-            var consultUserById = await _userRepository.GetById(id);
+            var consultUserById = await _userRepository.Get(x => x.Id == id);
             if (consultUserById == null)
                 throw new NotFoundException($"Usuário não encontrado na base de dados");
 

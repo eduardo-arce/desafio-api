@@ -3,21 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.Api", "Desafio.Api\Desafio.Api.csproj", "{F125A568-9EDF-4F1B-A88F-3139A0C0494E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.Api", "Desafio.Api\Desafio.Api.csproj", "{F125A568-9EDF-4F1B-A88F-3139A0C0494E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0} = {11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0}
 		{32AA57B1-07FF-47B4-A52E-6AE689CBC167} = {32AA57B1-07FF-47B4-A52E-6AE689CBC167}
 		{84EB2874-9A9B-47B1-B616-083229B19E0F} = {84EB2874-9A9B-47B1-B616-083229B19E0F}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.Domain", "Desafio.Domain\Desafio.Domain.csproj", "{11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.Domain", "Desafio.Domain\Desafio.Domain.csproj", "{11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.Service", "Desafio.Service\Desafio.Service.csproj", "{32AA57B1-07FF-47B4-A52E-6AE689CBC167}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.Service", "Desafio.Service\Desafio.Service.csproj", "{32AA57B1-07FF-47B4-A52E-6AE689CBC167}"
 	ProjectSection(ProjectDependencies) = postProject
 		{11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0} = {11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desafio.Infra", "Desafio.Infra\Desafio.Infra.csproj", "{84EB2874-9A9B-47B1-B616-083229B19E0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desafio.Infra", "Desafio.Infra\Desafio.Infra.csproj", "{84EB2874-9A9B-47B1-B616-083229B19E0F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0} = {11FE3FAA-D448-4FC1-AF70-08DA7BDE30E0}
 	EndProjectSection
