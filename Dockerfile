@@ -15,9 +15,6 @@ COPY . .
 RUN dotnet build Desafio.Api/Desafio.Api.csproj -c Release -o /app/build
 RUN dotnet publish Desafio.Api/Desafio.Api.csproj -c Release -o /app/publish
 
-#RUN dotnet ef migrations add InitialMigration --project Desafio.Infra --startup-project Desafio.Api
-#RUN dotnet ef database update --project Desafio.Infra --startup-project Desafio.Api
-
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 
 WORKDIR /app
