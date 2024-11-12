@@ -38,6 +38,7 @@ namespace Desafio.Service
 
             var userMapper = _mapper.Map<User>(userDTO);
             userMapper.Password = HashService.HashPassword(userDTO.Password);
+            userMapper.CreatedAt = DateTime.UtcNow;
 
             await _userRepository.AddAsync(userMapper);
             await _uow.CommitAsync();
@@ -208,6 +209,10 @@ namespace Desafio.Service
             bool emailOk = EmailValidatorService.IsValidEmail(email);
             if (!emailOk)
                 throw new BadRequestException("Email está incorreto");
+            var emailExist = await _userRepository.Get(x => x.Email == email);
+            if (email != null)
+                throw new BadRequestException("Email já existe na base de dados");
+
         }
     }
 }
