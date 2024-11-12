@@ -210,7 +210,7 @@ namespace Desafio.Service
             if (!emailOk)
                 throw new BadRequestException("Email está incorreto");
             var emailExist = await _userRepository.Get(x => x.Email == email);
-            if (email != null)
+            if (emailExist != null)
                 throw new BadRequestException("Email já existe na base de dados");
 
         }
